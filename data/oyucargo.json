@@ -1,0 +1,40 @@
+{
+  "admins": [
+    {
+      "id": 1,
+      "username": "admin",
+      "password_hash": "$2a$10$eCHrJ4Rjbh6Ow16dQHrIvuOzysCmt1KdPKlwI9P6c6nYFmB9/2MW2"
+    }
+  ],
+  "shipments": [
+    {
+      "id": 5,
+      "phone": "80118311",
+      "order_code": null,
+      "item_name": "333333",
+      "status": "Бүртгэгдсэн",
+      "note": null,
+      "updated_at": "2026-09-01 10:54:37"
+    },
+    {
+      "id": 6,
+      "phone": "98119884",
+      "order_code": null,
+      "item_name": "22222",
+      "status": "Бүртгэгдсэн",
+      "note": null,
+      "updated_at": "2026-09-01 10:54:34"
+    },
+    {
+      "id": 7,
+      "phone": "22222222",
+      "order_code": null,
+      "item_name": "1111",
+      "status": "Бүртгэгдсэн",
+      "note": null,
+      "updated_at": "2026-09-01 10:54:29"
+    }
+  ],
+  "nextAdminId": 2,
+  "nextShipmentId": 8
+}

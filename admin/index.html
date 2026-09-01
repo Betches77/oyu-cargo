@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oyu Cargo — Админ панель</title>
+<style>
+  :root{
+    --navy:#10192b; --navy-2:#182238; --orange:#ff6a1a; --orange-2:#ff8c42;
+    --paper:#f6f4ef; --ink:#10192b; --muted:#6b7280; --line:rgba(16,25,43,0.1); --radius:12px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,Arial,sans-serif;}
+  body{background:var(--paper);color:var(--ink);}
+  .hidden{display:none !important;}
+
+  /* Login screen */
+  #loginScreen{
+    min-height:100vh;display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(180deg,var(--navy),var(--navy-2));
+  }
+  .login-card{
+    background:#fff;border-radius:20px;padding:36px;width:100%;max-width:360px;
+    box-shadow:0 30px 60px -20px rgba(0,0,0,.5);
+  }
+  .login-card h1{font-size:20px;font-weight:900;margin-bottom:4px;text-align:center;}
+  .login-card p{color:var(--muted);font-size:13.5px;text-align:center;margin-bottom:24px;}
+  .field{margin-bottom:14px;}
+  .field label{font-size:13px;font-weight:700;display:block;margin-bottom:6px;}
+  .field input, .field select, .field textarea{
+    width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid var(--line);
+    font-size:14.5px;outline:none;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{border-color:var(--orange);}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:13px 22px;border-radius:999px;font-weight:700;font-size:14.5px;
+    border:none;cursor:pointer;width:100%;
+  }
+  .btn-primary{background:var(--orange);color:#fff;}
+  .btn-primary:hover{background:var(--orange-2);}
+  .btn-outline{background:transparent;border:1.5px solid var(--line);color:var(--ink);}
+  .btn-danger{background:#e0442e;color:#fff;}
+  .msg{font-size:13.5px;margin-top:10px;text-align:center;}
+  .msg.error{color:#e0442e;}
+  .msg.ok{color:#1a8f4c;}
+
+  /* Dashboard */
+  #dashScreen{min-height:100vh;}
+  .topbar{
+    background:var(--navy);color:#fff;padding:16px 24px;display:flex;
+    justify-content:space-between;align-items:center;
+  }
+  .topbar .brand{font-weight:900;font-size:17px;}
+  .topbar .right{display:flex;gap:10px;align-items:center;}
+  .topbar button{
+    background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;
+    padding:8px 16px;border-radius:999px;font-size:13px;cursor:pointer;font-weight:600;
+  }
+  .topbar button:hover{background:rgba(255,255,255,.2);}
+
+  .wrap{max-width:980px;margin:0 auto;padding:28px 20px 60px;}
+  .card{background:#fff;border-radius:var(--radius);border:1px solid var(--line);padding:24px;margin-bottom:22px;}
+  .card h2{font-size:16.5px;font-weight:800;margin-bottom:16px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media(max-width:640px){.grid2{grid-template-columns:1fr;}}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);}
+  th{color:var(--muted);font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.03em;}
+  tr:hover td{background:#faf9f6;}
+  .status-pill{
+    display:inline-block;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:700;
+    background:rgba(255,106,26,.12);color:var(--orange);
+  }
+  .row-actions{display:flex;gap:8px;}
+  .row-actions button{
+    border:none;background:none;cursor:pointer;font-size:13px;font-weight:700;padding:4px 8px;border-radius:6px;
+  }
+  .row-actions .edit{color:#1a6fd8;}
+  .row-actions .del{color:#e0442e;}
+  .row-actions button:hover{background:var(--line);}
+  #searchBox{max-width:260px;}
+  .toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:12px;flex-wrap:wrap;}
+</style>
+</head>
+<body>
+
+<!-- ============ НЭВТРЭХ ХУУДАС ============ -->
+<div id="loginScreen">
+  <div class="login-card">
+    <h1>Oyu Cargo — Админ</h1>
+    <p>Илгээмжийн мэдээлэл удирдах системд нэвтэрнэ үү</p>
+    <form id="loginForm">
+      <div class="field">
+        <label>Нэвтрэх нэр</label>
+        <input type="text" id="loginUser" autocomplete="username" required>
+      </div>
+      <div class="field">
+        <label>Нууц үг</label>
+        <input type="password" id="loginPass" autocomplete="current-password" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Нэвтрэх</button>
+      <div id="loginMsg" class="msg"></div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ ДАШБОРД ============ -->
+<div id="dashScreen" class="hidden">
+  <div class="topbar">
+    <div class="brand">📦 Oyu Cargo — Админ панель</div>
+    <div class="right">
+            <a href="/" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;padding:8px 16px;border-radius:999px;font-size:13px;cursor:pointer;font-weight:600;text-decoration:none;">← Сайт руу буцах</a>
+      <button id="pwBtn">Нууц үг солих</button>
+      <button id="logoutBtn">Гарах</button>
+    </div>
+  </div>
+
+  <div class="wrap">
+
+    <!-- Илгээмж нэмэх -->
+    <div class="card">
+      <h2>➕ Шинэ илгээмж бүртгэх</h2>
+      <form id="shipForm">
+        <input type="hidden" id="shipId">
+             <div class="grid2">
+          <div class="field">
+            <label>Утасны дугаар *</label>
+                        <input type="text" id="shipPhone" placeholder="99119884" required maxlength="8" pattern="[0-9]{8}" title="8 оронтой тоо оруулна уу" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,8)">
+          </div>
+          <div class="field">
+            <label>Барааны дугаар</label>
+            <input type="text" id="shipItem" placeholder="захиалгын дугаар эсвэл барааны нэр">
+          </div>
+        </div>
+        <div class="grid2">
+          <div class="field">
+            <label>Төлөв</label>
+            <select id="shipStatus">
+              <option>Бүртгэгдсэн</option>
+              <option>Эрээн агуулахад ирсэн</option>
+              <option>Тээвэрлэлтийн шатанд</option>
+              <option>Улаанбаатарт ирсэн</option>
+              <option>Салбарт бэлэн</option>
+              <option>Хүлээлгэн өгсөн</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Тэмдэглэл (заавал биш)</label>
+          <textarea id="shipNote" rows="2" placeholder="Нэмэлт мэдээлэл..."></textarea>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button type="submit" class="btn btn-primary" style="width:auto;padding:12px 26px;">Хадгалах</button>
+          <button type="button" id="cancelEditBtn" class="btn btn-outline hidden" style="width:auto;padding:12px 26px;">Цуцлах</button>
+        </div>
+        <div id="shipMsg" class="msg"></div>
+      </form>
+    </div>
+
+    <!-- Илгээмжийн жагсаалт -->
+    <div class="card">
+      <div class="toolbar">
+        <h2 style="margin:0;">📋 Бүх илгээмж</h2>
+        <input type="text" id="searchBox" placeholder="Утасны дугаараар хайх...">
+      </div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <              <th>Утас</th><th>Бараа</th><th>Төлөв</th><th>Шинэчлэгдсэн</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="shipTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+let allShipments = [];
+
+// ---------- Нэвтрэх шалгах ----------
+async function checkAuth(){
+  const res = await fetch('/api/admin/me');
+  if(res.ok){
+    const data = await res.json();
+    showDashboard(data.username);
+  } else {
+    showLogin();
+  }
+}
+function showLogin(){
+  $('loginScreen').classList.remove('hidden');
+  $('dashScreen').classList.add('hidden');
+}
+function showDashboard(username){
+  $('loginScreen').classList.add('hidden');
+  $('dashScreen').classList.remove('hidden');
+  loadShipments();
+}
+
+// ---------- Нэвтрэх ----------
+$('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const username = $('loginUser').value.trim();
+  const password = $('loginPass').value;
+  const msg = $('loginMsg');
+  msg.textContent = ''; msg.className = 'msg';
+  try{
+    const res = await fetch('/api/admin/login', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({username, password})
+    });
+    const data = await res.json();
+    if(!res.ok){ msg.textContent = data.error; msg.className='msg error'; return; }
+    showDashboard(username);
+  }catch(err){ msg.textContent = 'Сервертэй холбогдоход алдаа гарлаа'; msg.className='msg error'; }
+});
+
+$('logoutBtn').addEventListener('click', async () => {
+  await fetch('/api/admin/logout', {method:'POST'});
+  showLogin();
+});
+
+// ---------- Нууц үг солих ----------
+$('pwBtn').addEventListener('click', async () => {
+  const currentPassword = prompt('Одоогийн нууц үгээ оруулна уу:');
+  if(currentPassword === null) return;
+  const newPassword = prompt('Шинэ нууц үгээ оруулна уу (доод тал нь 4 тэмдэгт):');
+  if(newPassword === null) return;
+  const res = await fetch('/api/admin/change-password', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({currentPassword, newPassword})
+  });
+  const data = await res.json();
+  if(!res.ok){ alert('Алдаа: ' + data.error); return; }
+  alert('Нууц үг амжилттай солигдлоо.');
+});
+
+// ---------- Илгээмж бүртгэх / засах ----------
+$('shipForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const id = $('shipId').value;
+    const body = {
+    phone: $('shipPhone').value.trim(),
+    item_name: $('shipItem').value.trim(),
+    status: $('shipStatus').value,
+    note: $('shipNote').value.trim(),
+  };
+  const url = id ? `/api/admin/shipments/${id}` : '/api/admin/shipments';
+  const method = id ? 'PUT' : 'POST';
+  const res = await fetch(url, {
+    method, headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)
+  });
+  const data = await res.json();
+  const msg = $('shipMsg');
+  if(!res.ok){ msg.textContent = data.error; msg.className='msg error'; return; }
+  msg.textContent = id ? 'Амжилттай шинэчлэгдлээ.' : 'Амжилттай бүртгэгдлээ.';
+  msg.className = 'msg ok';
+  resetForm();
+  loadShipments();
+  setTimeout(()=>{ msg.textContent=''; }, 2500);
+});
+
+$('cancelEditBtn').addEventListener('click', resetForm);
+
+function resetForm(){
+  $('shipForm').reset();
+  $('shipId').value = '';
+  $('cancelEditBtn').classList.add('hidden');
+}
+
+// ---------- Жагсаалт ачаалах ----------
+async function loadShipments(){
+  const res = await fetch('/api/admin/shipments');
+  if(!res.ok) return;
+  allShipments = await res.json();
+  renderTable(allShipments);
+}
+
+function renderTable(rows){
+  const tbody = $('shipTableBody');
+  if(rows.length === 0){
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px;">Илгээмж бүртгэгдээгүй байна</td></tr>';
+    return;
+  }
+  tbody.innerHTML = rows.map(r => `
+       <tr>
+      <td>${r.phone}</td>
+      <td>${r.item_name || '-'}</td>
+      <td><span class="status-pill">${r.status}</span></td>
+      <td>${r.updated_at}</td>
+            <td class="row-actions">
+        <button class="edit" onclick="editShipment('${r.id}')">Засах</button>
+        <button class="del" onclick="deleteShipment('${r.id}')">Устгах</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function editShipment(id){
+  const r = allShipments.find(s => s.id === id);
+  if(!r) return;
+  $('shipId').value = r.id;
+    $('shipPhone').value = r.phone;
+  $('shipItem').value = r.item_name || '';
+  $('shipStatus').value = r.status;
+  $('shipNote').value = r.note || '';
+  $('cancelEditBtn').classList.remove('hidden');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+async function deleteShipment(id){
+  if(!confirm('Энэ илгээмжийг устгах уу?')) return;
+  await fetch(`/api/admin/shipments/${id}`, {method:'DELETE'});
+  loadShipments();
+}
+
+// ---------- Хайлт ----------
+$('searchBox').addEventListener('input', (e) => {
+  const q = e.target.value.replace(/\D/g,'');
+  if(!q){ renderTable(allShipments); return; }
+  renderTable(allShipments.filter(r => r.phone.includes(q)));
+});
+
+checkAuth();
+</script>
+</body>
+</html>
