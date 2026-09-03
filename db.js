@@ -57,13 +57,25 @@ module.exports = {
     const rows = await db.collection('shipments').find().sort({ updated_at: -1 }).toArray();
     return rows.map(r => ({ ...r, id: r._id.toString() }));
   },
-  async getShipmentsByPhone(phone) {
-    const rows = await db.collection('shipments').find({ phone }).sort({ updated_at: -1 }).toArray();
+
+  // Утасны дугаар ЭСВЭЛ барааны дугаараар хайх
+  async searchShipments(query) {
+    const trimmed = String(query || '').trim();
+    if (!trimmed) return [];
+    const digitsOnly = trimmed.replace(/\D/g, '');
+    const orConditions = [{ item_code: trimmed }];
+    if (digitsOnly) orConditions.push({ phone: digitsOnly });
+    const rows = await db.collection('shipments')
+      .find({ $or: orConditions })
+      .sort({ updated_at: -1 })
+      .toArray();
     return rows.map(r => ({ ...r, id: r._id.toString() }));
   },
-  async addShipment({ phone, item_name, status, note }) {
+
+  async addShipment({ phone, item_code, item_name, status, note }) {
     const doc = {
       phone,
+      item_code: item_code || null,
       item_name: item_name || null,
       status: status || 'Бүртгэгдсэн',
       note: note || null,
@@ -72,11 +84,12 @@ module.exports = {
     const result = await db.collection('shipments').insertOne(doc);
     return result.insertedId.toString();
   },
-  async updateShipment(id, { phone, item_name, status, note }) {
+  async updateShipment(id, { phone, item_code, item_name, status, note }) {
     const result = await db.collection('shipments').updateOne(
       { _id: new ObjectId(id) },
       { $set: {
           phone,
+          item_code: item_code || null,
           item_name: item_name || null,
           status: status || 'Бүртгэгдсэн',
           note: note || null,
