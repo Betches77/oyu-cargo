@@ -86,10 +86,10 @@ app.get('/api/admin/shipments', requireAuth, async (req, res) => {
 
 app.post('/api/admin/shipments', requireAuth, async (req, res) => {
   try {
-    const { phone, item_name, status, note } = req.body;
+    const { phone, item_code, item_name, status, note } = req.body;
     const cleanPhone = normalizePhone(phone);
     if (!cleanPhone) return res.status(400).json({ error: 'Утасны дугаар оруулна уу' });
-    const id = await db.addShipment({ phone: cleanPhone, item_name, status, note });
+    const id = await db.addShipment({ phone: cleanPhone, item_code, item_name, status, note });
     res.json({ ok: true, id });
   } catch (e) {
     console.error(e);
@@ -99,9 +99,9 @@ app.post('/api/admin/shipments', requireAuth, async (req, res) => {
 
 app.put('/api/admin/shipments/:id', requireAuth, async (req, res) => {
   try {
-    const { phone, item_name, status, note } = req.body;
+    const { phone, item_code, item_name, status, note } = req.body;
     const cleanPhone = normalizePhone(phone);
-    const ok = await db.updateShipment(req.params.id, { phone: cleanPhone, item_name, status, note });
+    const ok = await db.updateShipment(req.params.id, { phone: cleanPhone, item_code, item_name, status, note });
     if (!ok) return res.status(404).json({ error: 'Илгээмж олдсонгүй' });
     res.json({ ok: true });
   } catch (e) {
@@ -120,13 +120,14 @@ app.delete('/api/admin/shipments/:id', requireAuth, async (req, res) => {
   }
 });
 
+// Нийтийн: утасны дугаар ЭСВЭЛ барааны дугаараар хайх
 app.get('/api/track', async (req, res) => {
   try {
-    const phone = normalizePhone(req.query.phone);
-    if (!phone) return res.status(400).json({ error: 'Утасны дугаар оруулна уу' });
-    const rows = await db.getShipmentsByPhone(phone);
+    const q = req.query.q || req.query.phone || '';
+    if (!String(q).trim()) return res.status(400).json({ error: 'Утасны дугаар эсвэл барааны дугаараа оруулна уу' });
+    const rows = await db.searchShipments(q);
     if (rows.length === 0) {
-      return res.status(404).json({ error: 'Энэ дугаараар бүртгэгдсэн илгээмж олдсонгүй' });
+      return res.status(404).json({ error: 'Илгээмж олдсонгүй' });
     }
     res.json(rows);
   } catch (e) {
