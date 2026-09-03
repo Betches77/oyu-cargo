@@ -110,7 +110,7 @@
   <div class="topbar">
     <div class="brand">📦 Oyu Cargo — Админ панель</div>
     <div class="right">
-      <a href="/" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;padding:8px 16px;border-radius:999px;font-size:13px;cursor:pointer;font-weight:600;text-decoration:none;">← Сайт руу буцах</a>
+            <a href="/" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;padding:8px 16px;border-radius:999px;font-size:13px;cursor:pointer;font-weight:600;text-decoration:none;">← Сайт руу буцах</a>
       <button id="pwBtn">Нууц үг солих</button>
       <button id="logoutBtn">Гарах</button>
     </div>
@@ -123,21 +123,17 @@
       <h2>➕ Шинэ илгээмж бүртгэх</h2>
       <form id="shipForm">
         <input type="hidden" id="shipId">
-        <div class="grid2">
+             <div class="grid2">
           <div class="field">
             <label>Утасны дугаар *</label>
-            <input type="text" id="shipPhone" placeholder="99119884" required maxlength="8" pattern="[0-9]{8}" title="8 оронтой тоо оруулна уу" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,8)">
+                        <input type="text" id="shipPhone" placeholder="99119884" required maxlength="8" pattern="[0-9]{8}" title="8 оронтой тоо оруулна уу" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,8)">
           </div>
           <div class="field">
             <label>Барааны дугаар</label>
-            <input type="text" id="shipCode" placeholder="захиалгын дугаар">
+            <input type="text" id="shipItem" placeholder="захиалгын дугаар эсвэл барааны нэр">
           </div>
         </div>
         <div class="grid2">
-          <div class="field">
-            <label>Барааны нэр</label>
-            <input type="text" id="shipItem" placeholder="Гутал, хувцас гэх мэт">
-          </div>
           <div class="field">
             <label>Төлөв</label>
             <select id="shipStatus">
@@ -166,13 +162,13 @@
     <div class="card">
       <div class="toolbar">
         <h2 style="margin:0;">📋 Бүх илгээмж</h2>
-        <input type="text" id="searchBox" placeholder="Утас эсвэл барааны дугаараар хайх...">
+        <input type="text" id="searchBox" placeholder="Утасны дугаараар хайх...">
       </div>
       <div style="overflow-x:auto;">
         <table>
           <thead>
             <tr>
-              <th>Утас</th><th>Барааны дугаар</th><th>Бараа</th><th>Төлөв</th><th>Шинэчлэгдсэн</th><th></th>
+              <              <th>Утас</th><th>Бараа</th><th>Төлөв</th><th>Шинэчлэгдсэн</th><th></th>
             </tr>
           </thead>
           <tbody id="shipTableBody"></tbody>
@@ -249,9 +245,8 @@ $('pwBtn').addEventListener('click', async () => {
 $('shipForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const id = $('shipId').value;
-  const body = {
+    const body = {
     phone: $('shipPhone').value.trim(),
-    item_code: $('shipCode').value.trim(),
     item_name: $('shipItem').value.trim(),
     status: $('shipStatus').value,
     note: $('shipNote').value.trim(),
@@ -294,13 +289,12 @@ function renderTable(rows){
     return;
   }
   tbody.innerHTML = rows.map(r => `
-    <tr>
+       <tr>
       <td>${r.phone}</td>
-      <td>${r.item_code || '-'}</td>
       <td>${r.item_name || '-'}</td>
       <td><span class="status-pill">${r.status}</span></td>
       <td>${r.updated_at}</td>
-      <td class="row-actions">
+            <td class="row-actions">
         <button class="edit" onclick="editShipment('${r.id}')">Засах</button>
         <button class="del" onclick="deleteShipment('${r.id}')">Устгах</button>
       </td>
@@ -312,8 +306,7 @@ function editShipment(id){
   const r = allShipments.find(s => s.id === id);
   if(!r) return;
   $('shipId').value = r.id;
-  $('shipPhone').value = r.phone;
-  $('shipCode').value = r.item_code || '';
+    $('shipPhone').value = r.phone;
   $('shipItem').value = r.item_name || '';
   $('shipStatus').value = r.status;
   $('shipNote').value = r.note || '';
@@ -327,15 +320,11 @@ async function deleteShipment(id){
   loadShipments();
 }
 
-// ---------- Хайлт (утас эсвэл барааны дугаараар) ----------
+// ---------- Хайлт ----------
 $('searchBox').addEventListener('input', (e) => {
-  const q = e.target.value.trim();
+  const q = e.target.value.replace(/\D/g,'');
   if(!q){ renderTable(allShipments); return; }
-  const digitsOnly = q.replace(/\D/g,'');
-  renderTable(allShipments.filter(r =>
-    (digitsOnly && r.phone.includes(digitsOnly)) ||
-    (r.item_code && r.item_code.toLowerCase().includes(q.toLowerCase()))
-  ));
+  renderTable(allShipments.filter(r => r.phone.includes(q)));
 });
 
 checkAuth();
