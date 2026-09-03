@@ -28,15 +28,15 @@
     width:100%;
   }
   a{color:inherit;text-decoration:none;}
-  img{max-width:100%;display:block;}
+  img{max-width:0%;display:block;}
   .container{max-width:1160px;margin:0 auto;padding:0 24px;}
   .btn{
     display:inline-flex;align-items:center;justify-content:center;gap:8px;
     padding:14px 26px;border-radius:999px;font-weight:700;font-size:15px;
     border:none;cursor:pointer;transition:transform .15s ease, box-shadow .15s ease;
   }
-  .btn-primary{background:var(--orange);color:#fff;box-shadow:0 10px 24px -8px rgba(255,106,26,.6);}
-  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 28px -8px rgba(255,106,26,.7);}
+  .btn-primary{background:var(--orange);color:#fff;box-shadow:0 px 24px -8px rgba(255,6,26,.6);}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 28px -8px rgba(255,6,26,.7);}
   .btn-ghost{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.35);}
   .btn-ghost:hover{border-color:#fff;}
   .eyebrow{
@@ -49,8 +49,8 @@
     background:rgba(16,25,43,.92);backdrop-filter:blur(8px);
     border-bottom:1px solid rgba(255,255,255,.06);
   }
-  .nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0;color:#fff;flex-wrap:wrap;gap:10px;}
-  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:#fff;}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0;color:#fff;flex-wrap:wrap;gap:px;}
+  .brand{display:flex;align-items:center;gap:px;font-weight:800;font-size:20px;color:#fff;}
   .brand .mark{
     width:44px;height:44px;border-radius:50%;
     object-fit:contain;
@@ -59,7 +59,7 @@
   }
   nav.links{display:flex;gap:28px;font-size:14.5px;font-weight:600;color:rgba(255,255,255,.8);}
   nav.links a:hover{color:#fff;}
-  .nav-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .nav-right{display:flex;align-items:center;gap:px;flex-wrap:wrap;}
   .phone{font-weight:700;font-size:14.5px;color:#fff;display:flex;align-items:center;gap:6px;white-space:nowrap;}
   .fb-btn{
     display:flex;align-items:center;justify-content:center;
@@ -85,7 +85,7 @@
 
   /* Hero */
   .hero{
-    background:radial-gradient(1200px 500px at 15% -10%, rgba(255,106,26,.25), transparent 60%),
+    background:radial-gradient(1200px 500px at 15% -%, rgba(255,6,26,.25), transparent 60%),
                linear-gradient(180deg,var(--navy),var(--navy-2));
     color:#fff;padding:90px 0 70px;position:relative;overflow:hidden;
   }
@@ -94,7 +94,7 @@
   .hero h1{font-size:clamp(30px,7vw,54px);font-weight:900;line-height:1.08;margin:14px 0 18px;}
   .hero h1 span{color:var(--orange);}
   .hero p{color:rgba(255,255,255,.75);font-size:17px;max-width:520px;margin-bottom:30px;}
-  .tags{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:30px;}
+  .tags{display:flex;gap:px;flex-wrap:wrap;margin-bottom:30px;}
   .tag{
     background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);
     padding:8px 16px;border-radius:999px;font-size:13.5px;font-weight:600;
@@ -110,10 +110,10 @@
   .hero-card{
     background:#fff;color:var(--ink);border-radius:20px;padding:28px;
     box-shadow:0 30px 60px -20px rgba(0,0,0,.5);
-    max-width:100%;
+    max-width:0%;
   }
   .hero-card .logo-badge{
-    width:100px;height:100px;border-radius:50%;margin:0 auto 16px;
+    width:0px;height:0px;border-radius:50%;margin:0 auto 16px;
     object-fit:contain;
     background:#fff;
     box-shadow:0 4px 14px rgba(0,0,0,.15);
@@ -122,11 +122,11 @@
   .hero-card p.sub{text-align:center;color:var(--muted);font-size:13.5px;margin-bottom:22px;}
   .track-form{display:flex;flex-direction:column;gap:12px;}
   .track-form input{
-    padding:14px 16px;border-radius:10px;border:1.5px solid var(--line);font-size:14.5px;
-    outline:none;width:100%;
+    padding:14px 16px;border-radius:px;border:1.5px solid var(--line);font-size:14.5px;
+    outline:none;width:0%;
   }
   .track-form input:focus{border-color:var(--orange);}
-  .track-form button{width:100%;}
+  .track-form button{width:0%;}
   #track-result{font-size:13.5px;color:var(--muted);margin-top:6px;min-height:18px;}
   .result-card{
     margin-top:14px;border:1px solid var(--line);border-radius:10px;padding:14px 16px;
@@ -366,7 +366,7 @@
     <div class="contact-band">
       <div>
         <h3>Ажиллах цагийн хуваарь</h3>
-        <p>Цагийн хуваарь: 10:00–20:00 · Даваа гарагт амарна.</p>
+        <p>Цагийн хуваарь: 12:00–20:00 · Даваа гарагт амарна.</p>
       </div>
       <a href="tel:88939839" class="btn btn-primary">📞 8893 9839</a>
     </div>
@@ -418,7 +418,7 @@
           <div class="r-row"><span>Утас:</span><b>${s.phone}</b></div>
           ${s.item_name ? `<div class="r-row"><span>Барааны дугаар:</span><b>${s.item_name}</b></div>` : ''}
           <div class="r-row"><span>Шинэчлэгдсэн:</span><b>${s.updated_at}</b></div>
-          ${s.note ? `<div class="r-row"><span>Тэмдэглэл:</span><b>${s.note}</b></div>` : ''}
+          ${s.note ? `<div class="r-row"><span>Үнэ:</span><b>${s.note}</b></div>` : ''}
           <div class="r-status">${s.status}</div>
         </div>
       `).join('');
