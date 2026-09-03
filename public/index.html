@@ -404,7 +404,8 @@
     result.textContent = 'Хайж байна...';
 
     try{
-      const res = await fetch('/api/track?phone=' + encodeURIComponent(phone));
+      //const res = await fetch('/api/track?phone=' + encodeURIComponent(phone));
+      const res = await fetch('/api/track?q=' + encodeURIComponent(phone));
       const data = await res.json();
 
       if(!res.ok){
