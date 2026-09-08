@@ -175,7 +175,8 @@
           <tbody id="shipTableBody"></tbody>
         </table>
       </div>
-      <div style="margin-top:14px;display:flex;justify-content:flex-end;">
+            <div style="margin-top:14px;display:flex;justify-content:flex-end;gap:10px;align-items:center;">
+        <button id="deleteSelectedBtn" class="btn btn-danger" style="width:auto;padding:10px 20px;">Сонгосныг устгах</button>
         <div style="background:#faf9f6;border:1px solid var(--line);border-radius:10px;padding:10px 18px;font-size:14.5px;font-weight:700;">
           Сонгосон дүн: <span id="selectedTotal" style="color:var(--orange);">0₮</span>
         </div>
@@ -184,6 +185,7 @@
 
   </div>
 </div>
+
 
 <script>
 const $ = (id) => document.getElementById(id);
@@ -262,7 +264,7 @@ $('pwBtn').addEventListener('click', async () => {
 $('shipForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const id = $('shipId').value;
-    const body = {
+  const body = {
     phone: $('shipPhone').value.trim(),
     item_name: $('shipItem').value.trim(),
     status: $('shipStatus').value,
@@ -309,7 +311,7 @@ function renderTable(rows){
   }
   tbody.innerHTML = rows.map(r => `
     <tr>
-      <td><input type="checkbox" class="ship-check" data-price="${parsePrice(r.note)}"></td>
+      <td><input type="checkbox" class="ship-check" data-id="${r.id}" data-price="${parsePrice(r.note)}"></td>
       <td>${r.phone}</td>
       <td>${r.item_name || '-'}</td>
       <td>${formatPrice(r.note)}</td>
@@ -344,11 +346,22 @@ $('selectAllCheck').addEventListener('change', (e) => {
   updateSelectedTotal();
 });
 
+// ---------- Сонгосныг устгах ----------
+$('deleteSelectedBtn').addEventListener('click', async () => {
+  const checked = document.querySelectorAll('.ship-check:checked');
+  if(checked.length === 0){ alert('Устгах илгээмжээ сонгоно уу.'); return; }
+  if(!confirm(`Сонгосон ${checked.length} илгээмжийг устгах уу?`)) return;
+
+  const ids = Array.from(checked).map(c => c.dataset.id);
+  await Promise.all(ids.map(id => fetch(`/api/admin/shipments/${id}`, {method:'DELETE'})));
+  loadShipments();
+});
+
 function editShipment(id){
   const r = allShipments.find(s => s.id === id);
   if(!r) return;
   $('shipId').value = r.id;
-    $('shipPhone').value = r.phone;
+  $('shipPhone').value = r.phone;
   $('shipItem').value = r.item_name || '';
   $('shipStatus').value = r.status;
   $('shipNote').value = r.note || '';
@@ -364,7 +377,7 @@ async function deleteShipment(id){
 
 // ---------- Хайлт ----------
 $('searchBox').addEventListener('input', (e) => {
-  const raw = e.target.value.trim();a
+  const raw = e.target.value.trim();
   const qDigits = raw.replace(/\D/g,'');
   if(!raw){ renderTable(allShipments); return; }
   renderTable(allShipments.filter(r =>
