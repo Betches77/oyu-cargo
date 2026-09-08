@@ -133,7 +133,7 @@
             <input type="text" id="shipItem" placeholder="захиалгын дугаар эсвэл барааны нэр">
           </div>
         </div>
-        <div class="grid2">
+                <div class="grid2">
           <div class="field">
             <label>Төлөв</label>
             <select id="shipStatus">
@@ -145,10 +145,10 @@
               <option>Хүлээлгэн өгсөн</option>
             </select>
           </div>
-        </div>
-        <div class="field">
-          <label>Тэмдэглэл (заавал биш)</label>
-          <textarea id="shipNote" rows="2" placeholder="Нэмэлт мэдээлэл..."></textarea>
+          <div class="field">
+            <label>Барааны үнэ</label>
+            <input type="text" id="shipNote" placeholder="жишээ нь: 150000" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+          </div>
         </div>
         <div style="display:flex;gap:10px;">
           <button type="submit" class="btn btn-primary" style="width:auto;padding:12px 26px;">Хадгалах</button>
@@ -158,21 +158,27 @@
       </form>
     </div>
 
-    <!-- Илгээмжийн жагсаалт -->
+        <!-- Илгээмжийн жагсаалт -->
     <div class="card">
       <div class="toolbar">
         <h2 style="margin:0;">📋 Бүх илгээмж</h2>
-        <input type="text" id="searchBox" placeholder="Утасны дугаараар хайх...">
+        <input type="text" id="searchBox" placeholder="Утас эсвэл барааны дугаараар хайх...">
       </div>
       <div style="overflow-x:auto;">
         <table>
           <thead>
             <tr>
-              <              <th>Утас</th><th>Бараа</th><th>Төлөв</th><th>Шинэчлэгдсэн</th><th></th>
+              <th><input type="checkbox" id="selectAllCheck" title="Бүгдийг сонгох"></th>
+              <th>Утас</th><th>Бараа</th><th>Үнэ</th><th>Төлөв</th><th>Шинэчлэгдсэн</th><th></th>
             </tr>
           </thead>
           <tbody id="shipTableBody"></tbody>
         </table>
+      </div>
+      <div style="margin-top:14px;display:flex;justify-content:flex-end;">
+        <div style="background:#faf9f6;border:1px solid var(--line);border-radius:10px;padding:10px 18px;font-size:14.5px;font-weight:700;">
+          Сонгосон дүн: <span id="selectedTotal" style="color:var(--orange);">0₮</span>
+        </div>
       </div>
     </div>
 
@@ -182,6 +188,17 @@
 <script>
 const $ = (id) => document.getElementById(id);
 let allShipments = [];
+
+// ---------- Үнийн тусламж функцууд ----------
+function parsePrice(val){
+  if(!val) return 0;
+  const num = parseFloat(String(val).replace(/[^0-9.]/g,''));
+  return isNaN(num) ? 0 : num;
+}
+function formatPrice(val){
+  const num = parsePrice(val);
+  return num ? num.toLocaleString('mn-MN') + '₮' : '-';
+}
 
 // ---------- Нэвтрэх шалгах ----------
 async function checkAuth(){
@@ -285,22 +302,47 @@ async function loadShipments(){
 function renderTable(rows){
   const tbody = $('shipTableBody');
   if(rows.length === 0){
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px;">Илгээмж бүртгэгдээгүй байна</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px;">Илгээмж бүртгэгдээгүй байна</td></tr>';
+    $('selectAllCheck').checked = false;
+    updateSelectedTotal();
     return;
   }
   tbody.innerHTML = rows.map(r => `
-       <tr>
+    <tr>
+      <td><input type="checkbox" class="ship-check" data-price="${parsePrice(r.note)}"></td>
       <td>${r.phone}</td>
       <td>${r.item_name || '-'}</td>
+      <td>${formatPrice(r.note)}</td>
       <td><span class="status-pill">${r.status}</span></td>
       <td>${r.updated_at}</td>
-            <td class="row-actions">
+      <td class="row-actions">
         <button class="edit" onclick="editShipment('${r.id}')">Засах</button>
         <button class="del" onclick="deleteShipment('${r.id}')">Устгах</button>
       </td>
     </tr>
   `).join('');
+  $('selectAllCheck').checked = false;
+  updateSelectedTotal();
 }
+
+// ---------- Сонгосон мөрүүдийн нийт үнэ ----------
+function updateSelectedTotal(){
+  const checked = document.querySelectorAll('.ship-check:checked');
+  let total = 0;
+  checked.forEach(c => total += parseFloat(c.dataset.price) || 0);
+  $('selectedTotal').textContent = total.toLocaleString('mn-MN') + '₮';
+}
+
+$('shipTableBody').addEventListener('change', (e) => {
+  if(e.target.classList.contains('ship-check')){
+    updateSelectedTotal();
+  }
+});
+
+$('selectAllCheck').addEventListener('change', (e) => {
+  document.querySelectorAll('.ship-check').forEach(cb => cb.checked = e.target.checked);
+  updateSelectedTotal();
+});
 
 function editShipment(id){
   const r = allShipments.find(s => s.id === id);
@@ -322,9 +364,13 @@ async function deleteShipment(id){
 
 // ---------- Хайлт ----------
 $('searchBox').addEventListener('input', (e) => {
-  const q = e.target.value.replace(/\D/g,'');
-  if(!q){ renderTable(allShipments); return; }
-  renderTable(allShipments.filter(r => r.phone.includes(q)));
+  const raw = e.target.value.trim();a
+  const qDigits = raw.replace(/\D/g,'');
+  if(!raw){ renderTable(allShipments); return; }
+  renderTable(allShipments.filter(r =>
+    (qDigits && r.phone.includes(qDigits)) ||
+    (r.item_name && r.item_name.toLowerCase().includes(raw.toLowerCase()))
+  ));
 });
 
 checkAuth();

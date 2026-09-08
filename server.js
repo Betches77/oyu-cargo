@@ -122,11 +122,11 @@ app.delete('/api/admin/shipments/:id', requireAuth, async (req, res) => {
 
 app.get('/api/track', async (req, res) => {
   try {
-    const phone = normalizePhone(req.query.phone);
-    if (!phone) return res.status(400).json({ error: 'Утасны дугаар оруулна уу' });
-    const rows = await db.getShipmentsByPhone(phone);
+    const query = (req.query.q || req.query.phone || '').toString().trim();
+    if (!query) return res.status(400).json({ error: 'Утасны дугаар эсвэл барааны дугаараа оруулна уу' });
+    const rows = await db.getShipmentsBySearch(query);
     if (rows.length === 0) {
-      return res.status(404).json({ error: 'Энэ дугаараар бүртгэгдсэн илгээмж олдсонгүй' });
+      return res.status(404).json({ error: 'Илгээмж олдсонгүй' });
     }
     res.json(rows);
   } catch (e) {

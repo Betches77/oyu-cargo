@@ -61,6 +61,17 @@ module.exports = {
     const rows = await db.collection('shipments').find({ phone }).sort({ updated_at: -1 }).toArray();
     return rows.map(r => ({ ...r, id: r._id.toString() }));
   },
+  // ШИНЭ: Утас БОЛОН барааны дугаараар хайх функц (public track-д ашиглана)
+  async getShipmentsBySearch(query) {
+    const raw = String(query || '').trim();
+    const digits = raw.replace(/\D/g, '');
+    const orConditions = [];
+    if (digits) orConditions.push({ phone: digits });
+    if (raw) orConditions.push({ item_name: { $regex: raw, $options: 'i' } });
+    if (orConditions.length === 0) return [];
+    const rows = await db.collection('shipments').find({ $or: orConditions }).sort({ updated_at: -1 }).toArray();
+    return rows.map(r => ({ ...r, id: r._id.toString() }));
+  },
   async addShipment({ phone, item_name, status, note }) {
     const doc = {
       phone,
