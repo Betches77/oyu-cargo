@@ -134,7 +134,7 @@
           </div>
         </div>
                 <div class="grid2">
-          <div class="field">
+          <!--<div class="field">
             <label>Төлөв</label>
             <select id="shipStatus">
               <option>Бүртгэгдсэн</option>
@@ -144,7 +144,7 @@
               <option>Салбарт бэлэн</option>
               <option>Хүлээлгэн өгсөн</option>
             </select>
-          </div>
+          </div>-->
           <div class="field">
             <label>Барааны үнэ</label>
             <input type="text" id="shipNote" placeholder="жишээ нь: 150000" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
@@ -267,7 +267,8 @@ $('shipForm').addEventListener('submit', async (e) => {
   const body = {
     phone: $('shipPhone').value.trim(),
     item_name: $('shipItem').value.trim(),
-    status: $('shipStatus').value,
+    //status: $('shipStatus').value,
+    status: 'Салбарт бэлэн',
     note: $('shipNote').value.trim(),
   };
   const url = id ? `/api/admin/shipments/${id}` : '/api/admin/shipments';
@@ -315,7 +316,7 @@ function renderTable(rows){
       <td>${r.phone}</td>
       <td>${r.item_name || '-'}</td>
       <td>${formatPrice(r.note)}</td>
-      <td><span class="status-pill">${r.status}</span></td>
+      <td><span class="status-pill">Салбарт бэлэн</span></td>
       <td>${r.updated_at}</td>
       <td class="row-actions">
         <button class="edit" onclick="editShipment('${r.id}')">Засах</button>
