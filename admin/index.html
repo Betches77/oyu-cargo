@@ -335,6 +335,7 @@ function updateSelectedTotal(){
   const checked = document.querySelectorAll('.ship-check:checked');
   let total = 0;
   checked.forEach(c => total += parseFloat(c.dataset.price) || 0);
+  $('selectedCount').textContent = checked.length;
   $('selectedTotal').textContent = total.toLocaleString('mn-MN') + '₮';
 }
 
